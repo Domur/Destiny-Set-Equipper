@@ -1,6 +1,1 @@
-"# Snake-Game" 
-"# Snake-Game" 
-"# Snake-Game" 
-"# destiny-set-equipper" 
-"# destiny-set-equipper" 
-"# destiny-set-equipper" 
+Destiny Set Equipper allows Destiny players to create gear sets and equip them with the press of a button.
