@@ -16,7 +16,7 @@ class MainPage(webapp2.RequestHandler):
 		
 	@app.route("/chars/<data>")
 	def chars(data):
-		headers = {"X-API-Key": "<api key>"}
+		headers = {"X-API-Key": "<API Key>"}
 		getMember = requests.get("https://www.bungie.net/Platform/User/GetMembershipsById/" + data + "/0/", headers = headers)
 		memberJSON = getMember.json()
 		for member in memberJSON["Response"]["destinyMemberships"]:
@@ -47,7 +47,7 @@ class MainPage(webapp2.RequestHandler):
 	@app.route("/getequipped/")
 	def getequipped():
 		global access_token
-		headers = {"X-API-Key": "<api key>", 'Authorization': 'Bearer ' + access_token}
+		headers = {"X-API-Key": "<API Key>", 'Authorization': 'Bearer ' + access_token}
 		getMember = requests.get("https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/", headers = headers)
 		print(getMember)
 		memberJSON = getMember.json()
@@ -64,18 +64,33 @@ class MainPage(webapp2.RequestHandler):
     	
 	@app.route("/getchar/<type>/<id>")
 	def getchar(type, id):
-		headers = {"X-API-Key": "<api key>", 'Authorization': 'Bearer ' + access_token}
-		getCharInfo = requests.get("https://www.bungie.net/Platform/Destiny2/" + type + "/Profile/" + id + "/?components=CharacterEquipment", headers = headers)
-		itemJSON = json.loads(getCharInfo.text)
+		# manifestmain()
+		# getinfo(identifier, value)
+		print("TYPE: " + type)
+		print("ID: " + id)
+		headers = {"X-API-Key": "<API Key>", 'Authorization': 'Bearer ' + access_token}
+		getCharInfo = requests.get("https://www.bungie.net/Platform/Destiny2/" + type + "/Profile/" + id + "/?components=CharacterEquipment,CharacterInventories", headers = headers)
+		itemsJSON = json.loads(getCharInfo.text)
+		# itemsJSON = getCharInfo.json()
+		return (json.dumps(itemsJSON["Response"]))
 		charsItems = itemJSON["Response"]["characterEquipment"]["data"]
 		return json.dumps(charsItems)
 		
 	@app.route("/getitemdata/<type>/<hash>")
 	def getitemdata(type, hash):
-		headers = {"X-API-Key": "<api key>"}
+		headers = {"X-API-Key": "<API Key>"}
 		response = requests.get("http://www.bungie.net/Platform/Destiny2/Manifest/" + type + "/" + hash + "/", headers=headers)
 		rJSON = response.json()
 		return(json.dumps(rJSON))
+		
+	@app.route("/equipitem/<item>/<char>/<membertype>")
+	def equipitem(item, char, membertype):
+		print("IN EQUIP " + item + " " + char + " " + membertype)
+		HEADERS = {"X-API-Key": "<API Key>", 'Authorization': 'Bearer ' + access_token}
+		post_data = json.dumps({'itemId': item, 'characterId': char, 'membershipType': membertype})
+		response = requests.post("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItem/", headers = HEADERS, data = post_data)
+		equipJSON = json.loads(response.text)
+		return(json.dumps(equipJSON))
 							
 if __name__ == "__main__":
 	app.run()
